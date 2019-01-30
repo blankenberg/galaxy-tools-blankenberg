@@ -1,0 +1,208 @@
+<tool id="pancancer_classifier" name="PanCancer Classifier" version="0.0.1">
+  <description>Gene expression machine learning classifiers from TCGA PanCancerAtlas</description>
+  <requirements>
+    <requirement type="package" version="0.0.1">pancancer-dan</requirement>
+  </requirements>
+  <stdio>
+    <exit_code level="fatal" range="1:"/>
+  </stdio>
+  <version_command><![CDATA[cd \$PANCANCER_DIR && python scripts/pancancer_classifier.py --version]]></version_command>
+  <command><![CDATA[
+cd \$PANCANCER_DIR && 
+python scripts/pancancer_classifier.py 
+#if $genes and $genes is not None:
+--genes '$genes'
+#end if
+
+#if $diseases and str($diseases) != '':
+--diseases '$diseases'
+#end if
+
+#if $folds and $folds is not None:
+--folds '$folds'
+#end if
+$drop
+
+#if $filter_count and $filter_count is not None:
+--filter_count '$filter_count'
+#end if
+
+#if $filter_prop and $filter_prop is not None:
+--filter_prop '$filter_prop'
+#end if
+
+#if $num_features and $num_features is not None:
+--num_features '$num_features'
+#end if
+
+#if $alphas and $alphas is not None:
+--alphas '$alphas'
+#end if
+
+#if $l1_ratios and $l1_ratios is not None:
+--l1_ratios '$l1_ratios'
+#end if
+
+#if $alt_genes and str($alt_genes) != '':
+--alt_genes '$alt_genes'
+#end if
+
+#if $alt_diseases and str($alt_diseases) != '':
+--alt_diseases '$alt_diseases'
+#end if
+
+#if $alt_filter_count and $alt_filter_count is not None:
+--alt_filter_count '$alt_filter_count'
+#end if
+
+#if $alt_filter_prop and $alt_filter_prop is not None:
+--alt_filter_prop '$alt_filter_prop'
+#end if
+
+
+--alt_folder '${output_alt_folder.extra_files_path}'
+
+$remove_hyper
+$keep_intermediate
+
+#if $x_matrix and $x_matrix is not None:
+--x_matrix '$x_matrix'
+#end if
+$shuffled
+$shuffled_before_training
+$no_mutation
+$drop_rasopathy
+
+#if str($drop_x_genes)
+--drop_x_genes '$drop_x_genes'
+#end if
+$drop_expression
+$drop_covariates
+
+
+## Dan, new params added to script
+#if $filename_mut and $filename_mut is not None:
+--filename_mut '$filename_mut'
+#end if
+
+#if $filename_mut_burden and $filename_mut_burden is not None:
+--filename_mut_burden '$filename_mut_burden'
+#end if
+
+#if $filename_sample_freeze and $filename_sample_freeze is not None:
+--filename_sample_freeze '$filename_sample_freeze'
+#end if
+
+#if $copy_number_conditional.copy_number
+$copy_number_conditional.copy_number
+
+#if $copy_number_conditional.filename_copy_loss and $copy_number_conditional.filename_copy_loss is not None:
+--filename_copy_loss '$copy_number_conditional.filename_copy_loss'
+#end if
+
+#if $copy_number_conditional.filename_copy_gain and $copy_number_conditional.filename_copy_gain is not None:
+--filename_copy_gain '$copy_number_conditional.filename_copy_gain'
+#end if
+
+#if $copy_number_conditional.filename_cancer_gene_classification and $copy_number_conditional.filename_cancer_gene_classification is not None:
+--filename_cancer_gene_classification '$copy_number_conditional.filename_cancer_gene_classification'
+#end if
+
+#end if
+
+##> '$output_log'
+&&
+tree -H '.'  --noreport --charset utf-8 '${output_alt_folder.extra_files_path}' > '${output_alt_folder}'
+]]></command>
+  <inputs>
+    <param argument="--x_matrix" label="Filename of features to use in model" name="x_matrix" optional="true" type="data" format="tabular" help="data/pancan_rnaseq_freeze.tsv.gz"/>
+    <param argument="--filename_mut" label="Filename mutations" name="filename_mut" optional="true" type="data" format="tabular" help="data/pancan_mutation_freeze.tsv.gz"/>
+    <param argument="--filename_mut_burden" label="Filename of mutation burden" name="filename_mut_burden" optional="true" type="data" format="tabular" help="data/mutation_burden_freeze.tsv"/>
+    <param argument="--filename_sample_freeze" label="Filename of sample freeze" name="filename_sample_freeze" optional="true" type="data" format="tabular" help="data/sample_freeze.tsv"/>
+    <param argument="--genes" label="Comma separated string of HUGO gene symbols" name="genes" optional="False" type="text" value=""/>
+    <param argument="--diseases" label="Comma sep string of TCGA disease acronyms. If no arguments are passed, filtering will default to options given in --filter_count and --filter_prop." name="diseases" optional="true" type="text" value=""/>
+    <param argument="--folds" label="Number of cross validation folds to perform" name="folds" optional="true" type="integer" value="5"/>
+    <param argument="--drop" checked="false" label="Decision to drop input genes from X matrix" name="drop" type="boolean" truevalue="--drop" falsevalue=""/>
+    <conditional name="copy_number_conditional">
+      <param argument="--copy_number" checked="false" label="Supplement Y matrix with copy number events" name="copy_number" type="boolean" truevalue="--copy_number" falsevalue=""/>
+      <when value="--copy_number">
+        <param argument="--filename_copy_loss" label="File with Copy number loss" name="filename_copy_loss" optional="true" type="data" format="tabular" help="data/copy_number_loss_status.tsv.gz"/>
+        <param argument="--filename_copy_gain" label="File with Copy number gain" name="filename_copy_gain" optional="true" type="data" format="tabular" help="data/copy_number_gain_status.tsv.gz"/>
+        <param argument="--filename_cancer_gene_classification" label="File with cancer gene classification table" name="filename_cancer_gene_classification" optional="true" type="data" format="tabular" help="data/vogelstein_cancergenes.tsv"/>
+      </when>
+    </conditional>
+
+
+
+
+    <param argument="--filter_count" label="Min number of mutations in diseases to include" name="filter_count" optional="true" type="integer" value="15"/>
+    <param argument="--filter_prop" label="Min proportion of positives to include disease" name="filter_prop" optional="true" type="float" value="0.05"/>
+    <param argument="--num_features" label="Number of MAD genes to include in classifier" name="num_features" optional="true" type="integer" value="8000"/>
+    <param argument="--alphas" label="the alphas for parameter sweep" name="alphas" optional="true" type="text" value="0.1,0.15,0.2,0.5,0.8,1"/>
+    <param argument="--l1_ratios" label="the l1 ratios for parameter sweep" name="l1_ratios" optional="true" type="text" value="0,0.1,0.15,0.18,0.2,0.3"/>
+    <param argument="--alt_genes" label="alternative genes to test performance" name="alt_genes" optional="true" type="text" value=""/>
+    <param argument="--alt_diseases" label="The alternative diseases to test performance" name="alt_diseases" optional="true" type="text" value=""/>
+    <param argument="--alt_filter_count" label="Min number of mutations in disease to include" name="alt_filter_count" optional="true" type="integer" value="15"/>
+    <param argument="--alt_filter_prop" label="Min proportion of positives to include disease" name="alt_filter_prop" optional="true" type="float" value="0.05"/>
+    <param argument="--remove_hyper" checked="false" label="Remove hypermutated samples" name="remove_hyper" type="boolean" truevalue="--remove_hyper" falsevalue=""/>
+    <param argument="--keep_intermediate" checked="false" label="Keep intermediate ROC values for plotting" name="keep_intermediate" type="boolean" truevalue="--keep_intermediate" falsevalue=""/>
+    <param argument="--shuffled" checked="false" label="Shuffle the input gene exprs matrix alongside" name="shuffled" type="boolean" truevalue="--shuffled" falsevalue=""/>
+    <param argument="--shuffled_before_training" checked="false" label="Shuffle the gene exprs matrix before training" name="shuffled_before_training" type="boolean" truevalue="--shuffled_before_training" falsevalue=""/>
+    <param argument="--no_mutation" checked="false" label="Remove mutation data from y matrix" name="no_mutation" type="boolean" truevalue="--no_mutation" falsevalue=""/>
+    <param argument="--drop_rasopathy" checked="false" label="Decision to drop rasopathy genes from X matrix" name="drop_rasopathy" type="boolean" truevalue="--drop_rasopathy" falsevalue=""/>
+    <param argument="--drop_x_genes" label="Comma separated list of genes to be dropped from X matrix" name="drop_x_genes" optional="true" type="text" value=""/>
+    
+
+    <param argument="--drop_expression" checked="false" label="Decision to drop gene expression values from X" name="drop_expression" type="boolean" truevalue="--drop_expression" falsevalue=""/>
+    <param argument="--drop_covariates" checked="false" label="Decision to drop covariate information from X" name="drop_covariates" type="boolean" truevalue="--drop_covariates" falsevalue=""/>
+  </inputs>
+  <outputs>
+    <!-- <data format="txt" name="output_log"/> -->
+    <data format="html" name="output_alt_folder"/>
+  </outputs>
+  <help><![CDATA[
+Gregory Way 2017
+PanCancer Classifier
+scripts/pancancer_classifier.py:
+    --genes             comma separated string of genes
+    --diseases          comma separated string of disease types for classifier
+                            default: Auto (will pick diseases from filter args)
+    --folds             number of cross validation folds
+                            default: 5
+    --drop              drop the input genes from the X matrix
+                            default: False if flag omitted
+    --copy_number       optional flag to supplement copy number to define Y
+                            default: False if flag omitted
+    --filter_count      int of low count of mutation to include disease
+                            default: 15
+    --filter_prop       float of low proportion of mutated samples per disease
+                            default: 0.05
+    --num_features      int of number of genes to include in classifier
+                            default: 8000
+    --alphas            comma separated string of alphas to test in pipeline
+                            default: '0.1,0.15,0.2,0.5,0.8,1'
+    --l1_ratios         comma separated string of l1 parameters to test
+                            default: '0,0.1,0.15,0.18,0.2,0.3'
+    --alt_genes         comma separated string of alternative genes to test
+                            default: None
+    --alt_diseases      comma separated string of alternative diseases to test
+                            default: Auto 
+    --alt_filter_count  int of low count of mutations to include alt_diseases
+                            default: 15
+    --alt_filter_prop   float of low proportion of mutated samples alt_disease
+                            default: 0.05
+    --alt_folder        string of where to save the classifier figures
+                            default: Auto
+    --remove_hyper      store_true: remove hypermutated samples
+                            default: False if flag omitted
+    --keep_intermediate store_true: keep intermediate roc curve items
+                            default: False if flag omitted
+    --x_matrix          string of which feature matrix to use
+                            default: raw
+
+Output:
+ROC curves, AUROC across diseases, and classifier coefficients
+
+    ]]></help>
+</tool>
+
