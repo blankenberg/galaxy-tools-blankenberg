@@ -110,12 +110,15 @@ $copy_number_conditional.copy_number
 
 #end if
 
+$x_as_raw
+
 ##> '$output_log'
 &&
 tree -H '.'  --noreport --charset utf-8 '${output_alt_folder.extra_files_path}' > '${output_alt_folder}'
 ]]></command>
   <inputs>
     <param argument="--x_matrix" label="Filename of features to use in model" name="x_matrix" optional="true" type="data" format="tabular" help="data/pancan_rnaseq_freeze.tsv.gz"/>
+    <param argument="--x_as_raw" checked="false" label="Treat X matrix as 'raw'" name="x_as_raw" type="boolean" truevalue="--x_as_raw" falsevalue=""/>
     <param argument="--filename_mut" label="Filename mutations" name="filename_mut" optional="true" type="data" format="tabular" help="data/pancan_mutation_freeze.tsv.gz"/>
     <param argument="--filename_mut_burden" label="Filename of mutation burden" name="filename_mut_burden" optional="true" type="data" format="tabular" help="data/mutation_burden_freeze.tsv"/>
     <param argument="--filename_sample" label="Filename of sample" name="filename_sample" optional="true" type="data" format="tabular" help="data/sample_freeze.tsv"/>
@@ -131,10 +134,6 @@ tree -H '.'  --noreport --charset utf-8 '${output_alt_folder.extra_files_path}' 
         <param argument="--filename_cancer_gene_classification" label="File with cancer gene classification table" name="filename_cancer_gene_classification" optional="true" type="data" format="tabular" help="data/vogelstein_cancergenes.tsv"/>
       </when>
     </conditional>
-
-
-
-
     <param argument="--filter_count" label="Min number of mutations in diseases to include" name="filter_count" optional="true" type="integer" value="15"/>
     <param argument="--filter_prop" label="Min proportion of positives to include disease" name="filter_prop" optional="true" type="float" value="0.05"/>
     <param argument="--num_features" label="Number of MAD genes to include in classifier" name="num_features" optional="true" type="integer" value="8000"/>
@@ -151,8 +150,6 @@ tree -H '.'  --noreport --charset utf-8 '${output_alt_folder.extra_files_path}' 
     <param argument="--no_mutation" checked="false" label="Remove mutation data from y matrix" name="no_mutation" type="boolean" truevalue="--no_mutation" falsevalue=""/>
     <param argument="--drop_rasopathy" checked="false" label="Decision to drop rasopathy genes from X matrix" name="drop_rasopathy" type="boolean" truevalue="--drop_rasopathy" falsevalue="" help="drop: BRAF,CBL,HRAS,KRAS,MAP2K1,MAP2K2,NF1,NRAS,PTPN11,RAF1,SHOC2,SOS1,SPRED1,RIT1"/>
     <param argument="--drop_x_genes" label="Comma separated list of genes to be dropped from X matrix" name="drop_x_genes" optional="true" type="text" value=""/>
-    
-
     <param argument="--drop_expression" checked="false" label="Decision to drop gene expression values from X" name="drop_expression" type="boolean" truevalue="--drop_expression" falsevalue=""/>
     <param argument="--drop_covariates" checked="false" label="Decision to drop covariate information from X" name="drop_covariates" type="boolean" truevalue="--drop_covariates" falsevalue=""/>
   </inputs>
