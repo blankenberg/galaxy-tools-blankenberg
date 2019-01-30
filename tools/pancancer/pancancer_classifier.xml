@@ -6,7 +6,7 @@
   <stdio>
     <exit_code level="fatal" range="1:"/>
   </stdio>
-  <version_command><![CDATA[cd \$PANCANCER_DIR && python scripts/pancancer_classifier.py --version]]></version_command>
+  <version_command><![CDATA[cd $PANCANCER_DIR && python scripts/pancancer_classifier.py --version]]></version_command>
   <command><![CDATA[
 cd \$PANCANCER_DIR && 
 python scripts/pancancer_classifier.py 
@@ -89,8 +89,8 @@ $drop_covariates
 --filename_mut_burden '$filename_mut_burden'
 #end if
 
-#if $filename_sample_freeze and $filename_sample_freeze is not None:
---filename_sample_freeze '$filename_sample_freeze'
+#if $filename_sample and $filename_sample is not None:
+--filename_sample '$filename_sample'
 #end if
 
 #if $copy_number_conditional.copy_number
@@ -118,7 +118,7 @@ tree -H '.'  --noreport --charset utf-8 '${output_alt_folder.extra_files_path}' 
     <param argument="--x_matrix" label="Filename of features to use in model" name="x_matrix" optional="true" type="data" format="tabular" help="data/pancan_rnaseq_freeze.tsv.gz"/>
     <param argument="--filename_mut" label="Filename mutations" name="filename_mut" optional="true" type="data" format="tabular" help="data/pancan_mutation_freeze.tsv.gz"/>
     <param argument="--filename_mut_burden" label="Filename of mutation burden" name="filename_mut_burden" optional="true" type="data" format="tabular" help="data/mutation_burden_freeze.tsv"/>
-    <param argument="--filename_sample_freeze" label="Filename of sample freeze" name="filename_sample_freeze" optional="true" type="data" format="tabular" help="data/sample_freeze.tsv"/>
+    <param argument="--filename_sample" label="Filename of sample" name="filename_sample" optional="true" type="data" format="tabular" help="data/sample_freeze.tsv"/>
     <param argument="--genes" label="Comma separated string of HUGO gene symbols" name="genes" optional="False" type="text" value=""/>
     <param argument="--diseases" label="Comma sep string of TCGA disease acronyms. If no arguments are passed, filtering will default to options given in --filter_count and --filter_prop." name="diseases" optional="true" type="text" value=""/>
     <param argument="--folds" label="Number of cross validation folds to perform" name="folds" optional="true" type="integer" value="5"/>
@@ -149,7 +149,7 @@ tree -H '.'  --noreport --charset utf-8 '${output_alt_folder.extra_files_path}' 
     <param argument="--shuffled" checked="false" label="Shuffle the input gene exprs matrix alongside" name="shuffled" type="boolean" truevalue="--shuffled" falsevalue=""/>
     <param argument="--shuffled_before_training" checked="false" label="Shuffle the gene exprs matrix before training" name="shuffled_before_training" type="boolean" truevalue="--shuffled_before_training" falsevalue=""/>
     <param argument="--no_mutation" checked="false" label="Remove mutation data from y matrix" name="no_mutation" type="boolean" truevalue="--no_mutation" falsevalue=""/>
-    <param argument="--drop_rasopathy" checked="false" label="Decision to drop rasopathy genes from X matrix" name="drop_rasopathy" type="boolean" truevalue="--drop_rasopathy" falsevalue=""/>
+    <param argument="--drop_rasopathy" checked="false" label="Decision to drop rasopathy genes from X matrix" name="drop_rasopathy" type="boolean" truevalue="--drop_rasopathy" falsevalue="" help="drop: BRAF,CBL,HRAS,KRAS,MAP2K1,MAP2K2,NF1,NRAS,PTPN11,RAF1,SHOC2,SOS1,SPRED1,RIT1"/>
     <param argument="--drop_x_genes" label="Comma separated list of genes to be dropped from X matrix" name="drop_x_genes" optional="true" type="text" value=""/>
     
 
