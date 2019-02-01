@@ -48,7 +48,26 @@
     </token>
 
     <token name="@INPUTS_BASIC_RAW@"><![CDATA[
-@INPUTS_BASIC@
+##@INPUTS_BASIC@
+##stupid copy from above
+#if $x_matrix and $x_matrix is not None:
+--x_matrix '$x_matrix'
+#end if
+
+#if $filename_mut and $filename_mut is not None:
+--filename_mut '$filename_mut'
+#end if
+
+#if $filename_mut_burden and $filename_mut_burden is not None:
+--filename_mut_burden '$filename_mut_burden'
+#end if
+
+#if $filename_sample and $filename_sample is not None:
+--filename_sample '$filename_sample'
+#end if
+
+##end copy
+
 $x_as_raw
 ]]>
     </token>
