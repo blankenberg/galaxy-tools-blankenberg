@@ -1,0 +1,38 @@
+<tool id="pancancer_tp53_ddr_cancertype_subtypes" name="PanCancer tp53_ddr_cancertype_subtypes" version="@VERSION@">
+  <description>tp53_ddr_cancertype_subtypes</description>
+  <macros>
+    <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <version_command0><![CDATA[cd $PANCANCER_DIR && Rscript --vanilla scripts/viz/ddr_summary_figures.R --version]]></version_command0>
+  <command><![CDATA[
+cp -R '$classifier_folder.extra_files_path' '${output_alt_folder.extra_files_path}'
+&&
+
+cd \$PANCANCER_DIR && 
+
+PANCANCER_ALT_FOLDER='${output_alt_folder.extra_files_path}'
+
+jupyter nbconvert --to=html
+--FilesWriter.build_directory='${output_nbconvert_build_directory.extra_files_path}'
+--ExecutePreprocessor.kernel_name=python3
+--ExecutePreprocessor.timeout=100000
+--execute 'scripts/tp53_ddr_cancertype_subtypes.ipynb'
+
+&&
+@OUTPUT_ALT_FOLDER_HTML@
+
+&&
+
+tree -H '.'  --noreport --charset utf-8 '${output_nbconvert_build_directory.extra_files_path}' > '${output_nbconvert_build_directory}'
+]]></command>
+  <inputs>
+    <param argument="PANCANCER_ALT_FOLDER" label="Classifier score data" name="classifier_folder" optional="false" type="data" format="html"/>
+  </inputs>
+  <outputs>
+    <expand macro="output_alt_folder" />
+    <data format="html" name="output_nbconvert_build_directory" />
+  </outputs>
+  <help><![CDATA[TODO: Write help]]></help>
+</tool>

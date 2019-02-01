@@ -1,0 +1,44 @@
+<tool id="pancancer_map_mutation_class" name="PanCancer map mutation class" version="@VERSION@">
+  <description>map mutation class</description>
+  <macros>
+    <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <version_command><![CDATA[cd $PANCANCER_DIR && python scripts/map_mutation_class.py --version]]></version_command>
+  <command><![CDATA[
+cp -R '$scores.extra_files_path' '${output_alt_folder.extra_files_path}'
+&&
+
+cd \$PANCANCER_DIR && 
+python scripts/map_mutation_class.py 
+
+
+--scores '${output_alt_folder.extra_files_path}'
+
+
+#if $genes and str($genes):
+--genes '$genes'
+#end if
+
+
+@INPUTS_COPY_NUMBER_FILE_CONDITIONAL@
+
+
+@INPUT_FILENAME_RAW_MUT@
+
+&&
+@OUTPUT_ALT_FOLDER_HTML@
+
+]]></command>
+  <inputs>
+    <param argument="--scores" label="Classifier score data" name="scores" optional="false" type="data" format="html"/>
+    <param argument="--genes" label="string of the genes to extract or genelist file" name="genes" optional="true" type="text"/>
+    <expand macro="inputs_copy_number_file_conditional" />
+    <expand macro="input_filename_raw_mut" />
+  </inputs>
+  <outputs>
+    <expand macro="output_alt_folder" />
+  </outputs>
+  <help><![CDATA[TODO: Write help]]></help>
+</tool>

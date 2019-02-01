@@ -1,0 +1,53 @@
+<tool id="pancancer_process_tp53_exons" name="PanCancer SNAPTRON process_tp53_exons" version="@VERSION@">
+  <description>process_tp53_exons</description>
+  <macros>
+    <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <version_command0><![CDATA[cd $PANCANCER_DIR && Rscript --vanilla scripts/viz/ddr_summary_figures.R --version]]></version_command0>
+  <command><![CDATA[
+
+cd \$PANCANCER_DIR/scripts/snaptron && 
+
+PANCANCER_ALT_FOLDER='${classifier_folder.extra_files_path}'
+
+#if $pancan_mutation_maf
+PANCANCER_MUT_MAF_FILE='${pancan_mutation_maf}'
+#end if
+#if $snaptron_samples
+PANCANCER_SNAPTRON_SAMPLES_FILE='${snaptron_samples}'
+#end if
+#if $snaptron_junctions
+PANCANCER_SNAPTRON_JUNCTIONS_FILE='${snaptron_junctions}'
+#end if
+#if $pancan_mutation_freeze
+PANCANCER_MUT_FILE='${pancan_mutation_freeze}'
+#end if
+
+PANCANCER_JUNCTIONS_MUTIONS_OUTPUT_FILE='$output_junctions_with_mutations'
+
+
+jupyter nbconvert --to=html
+--FilesWriter.build_directory='${output_nbconvert_build_directory.extra_files_path}'
+--ExecutePreprocessor.kernel_name=python3
+--ExecutePreprocessor.timeout=100000
+--execute process-tp53-exons.ipynb 
+
+&&
+
+tree -H '.'  --noreport --charset utf-8 '${output_nbconvert_build_directory.extra_files_path}' > '${output_nbconvert_build_directory}'
+]]></command>
+  <inputs>
+    <param argument="PANCANCER_ALT_FOLDER" label="Classifier score data" name="classifier_folder" optional="false" type="data" format="html"/>
+    <param argument="PANCANCER_MUT_MAF_FILE" label="mc3.v0.2.8.PUBLIC.maf.gz" name="pancan_mutation_maf" optional="true" type="data" format="tabular" help="data/raw/mc3.v0.2.8.PUBLIC.maf.gz"/>
+    <param argument="PANCANCER_SNAPTRON_SAMPLES_FILE" label="SNAPTRON Samples" name="snaptron_samples" optional="true" type="data" format="tabular" help="scripts/snaptron/samples.tsv.gz"/>
+    <param argument="PANCANCER_SNAPTRON_JUNCTIONS_FILE" label="SNAPTRON Junctions" name="snaptron_junctions" optional="true" type="data" format="tabular" help="scripts/snaptron/tp53_junctions.txt.gz"/>
+    <param argument="PANCANCER_MUT_FILE" label="pancan_mutation_freeze.tsv" name="pancan_mutation_freeze" optional="true" type="data" format="tabular"/>
+  </inputs>
+  <outputs>
+    <data format="html" name="output_nbconvert_build_directory" />
+    <data format="csv" name="output_junctions_with_mutations" />
+  </outputs>
+  <help><![CDATA[TODO: Write help]]></help>
+</tool>

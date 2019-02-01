@@ -1,0 +1,34 @@
+<tool id="investigate_silent_junctions" name="PanCancer SNAPTRON investigate_silent_junctions" version="@VERSION@">
+  <description>investigate_silent_junctions</description>
+  <macros>
+    <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <version_command0><![CDATA[cd $PANCANCER_DIR/scripts/snaptron && Rscript --vanilla investigate_silent_junctions.R --version]]></version_command0>
+  <command><![CDATA[
+
+cd \$PANCANCER_DIR/scripts/snaptron && 
+
+mkdir -p '${output_folder.extra_files_path}'
+
+&&
+
+Rscript --vanilla investigate_silent_junctions.R 
+
+--snaptron_file '$snaptron_file'
+
+--output_folder '${output_folder.extra_files_path}'
+
+&&
+
+tree -H '.'  --noreport --charset utf-8 '${output_folder.extra_files_path}' > '${output_folder}'
+]]></command>
+  <inputs>
+    <param argument="--snaptron_file" label="SNAPTRON junctions with mutations file" name="snaptron_file" optional="false" type="data" format="csv" help="tp53_junctions_with_mutations.csv.gz"/>
+  </inputs>
+  <outputs>
+    <data format="html" name="output_folder" />
+  </outputs>
+  <help><![CDATA[TODO: Write help]]></help>
+</tool>

@@ -1,0 +1,36 @@
+<tool id="pancancer_compare_within_models" name="PanCancer compare_within_models" version="@VERSION@">
+  <description>Plots pancancer classifier performance compared to within cancer</description>
+  <macros>
+    <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <version_command0><![CDATA[cd $PANCANCER_DIR && Rscript --vanilla scripts/viz/ddr_summary_figures.R --version]]></version_command0>
+  <command><![CDATA[
+cp -R '$pancan_summary.extra_files_path' '${output_alt_folder.extra_files_path}'
+&&
+
+cd \$PANCANCER_DIR && 
+Rscript --vanilla scripts/compare_within_models.R
+
+--within_dir '${output_alt_folder.extra_files_path}/within_disease'
+
+--pancan_summary '${output_alt_folder.extra_files_path}'
+
+#if $alt_gene:
+--alt_gene '${output_alt_folder.extra_files_path}'
+#end if
+
+&&
+@OUTPUT_ALT_FOLDER_HTML@
+
+]]></command>
+  <inputs>
+    <param argument="--pancan_summary" label="Classifier score data" name="pancan_summary" optional="false" type="data" format="html"/>
+    <param argument="--alt_gene" label="alt_gene Classifier score data" name="alt_gene" optional="true" type="data" format="html"/>
+  </inputs>
+  <outputs>
+    <expand macro="output_alt_folder" />
+  </outputs>
+  <help><![CDATA[TODO: Write help]]></help>
+</tool>

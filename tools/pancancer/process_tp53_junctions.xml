@@ -1,0 +1,29 @@
+<tool id="pancancer_process_tp53_junctions" name="PanCancer SNAPTRON process_tp53_junctions" version="@VERSION@">
+  <description>process_tp53_junctions</description>
+  <macros>
+    <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <version_command><![CDATA[cd $PANCANCER_DIR/scripts/snaptron/ && python process_tp53_junctions.py --version]]></version_command>
+  <command><![CDATA[
+cd \$PANCANCER_DIR/scripts/snaptron/ && 
+python process_tp53_junctions.py 
+
+--alt_folder '${classifier_folder.extra_files_path}'
+
+@INPUT_FILENAME_SNAPTRON_SAMPLES@
+@INPUT_FILENAME_SNAPTRON_JUNCTIONS@
+
+--output '$output_junctions'
+]]></command>
+  <inputs>
+    <param argument="--alt_folder" label="Classifier score data" name="classifier_folder" optional="false" type="data" format="html"/>
+    <expand macro="input_filename_snaptron_samples" />
+    <expand macro="input_filename_snaptron_junctions" />
+  </inputs>
+  <outputs>
+    <data format="csv" name="output_junctions" />
+  </outputs>
+  <help><![CDATA[TODO: Write help]]></help>
+</tool>

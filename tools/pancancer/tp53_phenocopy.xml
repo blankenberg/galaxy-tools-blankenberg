@@ -1,0 +1,50 @@
+<tool id="pancancer_tp53_phenocopy" name="PanCancer tp53_phenocopy" version="@VERSION@">
+  <description>pancancer_tp53_phenocopy</description>
+  <macros>
+    <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <version_command0><![CDATA[cd $PANCANCER_DIR && Rscript --vanilla scripts/viz/ddr_summary_figures.R --version]]></version_command0>
+  <command><![CDATA[
+cp -R '$classifier_folder.extra_files_path' '${output_alt_folder.extra_files_path}'
+&&
+
+cd \$PANCANCER_DIR && 
+
+PANCANCER_ALT_FOLDER='${output_alt_folder.extra_files_path}'
+#if $pancan_mutation_freeze
+PANCANCER_MUT_FILE='${pancan_mutation_freeze}'
+#end if
+#if $pancan_GISTIC_threshold
+PANCANCER_GISTIC_FILE='${pancan_GISTIC_threshold}'
+#end if
+#if $sample_freeze
+PANCANCER_SAMPLE_FREEZE_FILE='${sample_freeze}'
+#end if
+
+jupyter nbconvert --to=html
+--FilesWriter.build_directory='${output_nbconvert_build_directory.extra_files_path}'
+--ExecutePreprocessor.kernel_name=python3
+--ExecutePreprocessor.timeout=100000
+--execute 'scripts/tp53_phenocopy.ipynb'
+
+&&
+@OUTPUT_ALT_FOLDER_HTML@
+
+&&
+
+tree -H '.'  --noreport --charset utf-8 '${output_nbconvert_build_directory.extra_files_path}' > '${output_nbconvert_build_directory}'
+]]></command>
+  <inputs>
+    <param argument="PANCANCER_ALT_FOLDER" label="Classifier score data" name="classifier_folder" optional="false" type="data" format="html"/>
+    <param argument="PANCANCER_MUT_FILE" label="pancan_mutation_freeze.tsv" name="pancan_mutation_freeze" optional="true" type="data" format="tabular"/>
+    <param argument="PANCANCER_GISTIC_FILE" label="pancan_GISTIC_threshold.tsv" name="pancan_GISTIC_threshold" optional="true" type="data" format="tabular"/>
+    <param argument="PANCANCER_SAMPLE_FREEZE_FILE" label="sample_freeze.tsv" name="sample_freeze" optional="true" type="data" format="tabular"/>
+  </inputs>
+  <outputs>
+    <expand macro="output_alt_folder" />
+    <data format="html" name="output_nbconvert_build_directory" />
+  </outputs>
+  <help><![CDATA[TODO: Write help]]></help>
+</tool>
