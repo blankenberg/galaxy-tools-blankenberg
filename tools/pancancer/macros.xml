@@ -122,7 +122,7 @@ $x_as_raw
 
 
     <xml name="input_filename_snaptron_junctions">
-        <param argument="--junction_file" label="SNAPTRON samples" name="junction_file" optional="true" type="data" format="tabular" help="scripts/snaptron/tp53_junctions.txt.gz"/>
+        <param argument="--junction_file" label="SNAPTRON junctions" name="junction_file" optional="true" type="data" format="tabular" help="scripts/snaptron/tp53_junctions.txt.gz"/>
     </xml>
 
     <token name="@INPUT_FILENAME_SNAPTRON_JUNCTIONS@"><![CDATA[
