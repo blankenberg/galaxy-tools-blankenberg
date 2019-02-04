@@ -126,8 +126,8 @@ $x_as_raw
     </xml>
 
     <token name="@INPUT_FILENAME_SNAPTRON_JUNCTIONS@"><![CDATA[
-#if $sample_file and $sample_file is not None:
---sample_file '$sample_file'
+#if $junction_file and $junction_file is not None:
+--junction_file '$junction_file'
 #end if
 ]]></token>
 
